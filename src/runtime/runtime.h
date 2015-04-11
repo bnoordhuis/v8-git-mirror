@@ -234,6 +234,7 @@ namespace internal {
   F(GeneratorGetSourcePosition, 1, 1)   \
   F(FunctionIsGenerator, 1, 1)          \
   F(GeneratorNext, 2, 1)                \
+  F(GeneratorReturn, 2, 1)              \
   F(GeneratorThrow, 2, 1)
 
 

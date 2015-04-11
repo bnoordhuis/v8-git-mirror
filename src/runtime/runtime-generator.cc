@@ -129,6 +129,9 @@ RUNTIME_FUNCTION(Runtime_ResumeJSGeneratorObject) {
   switch (resume_mode) {
     case JSGeneratorObject::NEXT:
       return value;
+    case JSGeneratorObject::RETURN:
+      generator_object->set_continuation(JSGeneratorObject::kGeneratorClosed);
+      return value;
     case JSGeneratorObject::THROW:
       return isolate->Throw(value);
   }
@@ -217,6 +220,12 @@ RUNTIME_FUNCTION(Runtime_FunctionIsGenerator) {
 
 
 RUNTIME_FUNCTION(Runtime_GeneratorNext) {
+  UNREACHABLE();  // Optimization disabled in SetUpGenerators().
+  return NULL;
+}
+
+
+RUNTIME_FUNCTION(Runtime_GeneratorReturn) {
   UNREACHABLE();  // Optimization disabled in SetUpGenerators().
   return NULL;
 }

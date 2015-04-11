@@ -2081,7 +2081,17 @@ void FullCodeGenerator::VisitYield(Yield* expr) {
       __ jmp(&suspend);
 
       __ bind(&continuation);
-      __ jmp(&resume);
+      __ Push(rax);
+      VisitForAccumulatorValue(expr->generator_object());
+      __ cmpp(FieldOperand(rax, JSGeneratorObject::kContinuationOffset),
+              Immediate(JSGeneratorObject::kGeneratorClosed));
+      __ j(not_equal, &resume);
+
+      // Pop value from top-of-stack slot, box result into result register.
+      EmitCreateIteratorResult(true);
+      EmitUnwindBeforeReturn();
+      EmitReturnSequence();
+      // Not reached.
 
       __ bind(&suspend);
       VisitForAccumulatorValue(expr->generator_object());
@@ -2105,6 +2115,7 @@ void FullCodeGenerator::VisitYield(Yield* expr) {
       EmitReturnSequence();
 
       __ bind(&resume);
+      __ Pop(rax);
       context()->Plug(result_register());
       break;
     }

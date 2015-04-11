@@ -39,6 +39,25 @@ function GeneratorObjectNext(value) {
   }
 }
 
+function GeneratorObjectReturn(value) {
+  if (!IS_GENERATOR(this)) {
+    throw MakeTypeError('incompatible_method_receiver',
+                        ['[Generator].prototype.return', this]);
+  }
+
+  var continuation = %GeneratorGetContinuation(this);
+  if (continuation > 0) {
+    // Generator is suspended.
+    return %_GeneratorReturn(this, value);
+  } else if (continuation == 0) {
+    // Generator is already closed.
+    return { value: value, done: true };
+  } else {
+    // Generator is running.
+    throw MakeTypeError('generator_running', []);
+  }
+}
+
 function GeneratorObjectThrow(exn) {
   if (!IS_GENERATOR(this)) {
     throw MakeTypeError('incompatible_method_receiver',
@@ -84,6 +103,7 @@ function SetUpGenerators() {
   // Both Runtime_GeneratorNext and Runtime_GeneratorThrow are supported by
   // neither Crankshaft nor TurboFan, disable optimization of wrappers here.
   %NeverOptimizeFunction(GeneratorObjectNext);
+  %NeverOptimizeFunction(GeneratorObjectReturn);
   %NeverOptimizeFunction(GeneratorObjectThrow);
 
   // Set up non-enumerable functions on the generator prototype object.
@@ -91,6 +111,7 @@ function SetUpGenerators() {
   InstallFunctions(GeneratorObjectPrototype,
                    DONT_ENUM,
                    ["next", GeneratorObjectNext,
+                    "return", GeneratorObjectReturn,
                     "throw", GeneratorObjectThrow]);
 
   %FunctionSetName(GeneratorObjectIterator, '[Symbol.iterator]');
