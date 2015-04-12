@@ -91,19 +91,29 @@ function TestGenerator(g, expected_values_for_next,
       assertThrownIteratorIsClosed(iter);
     }
   }
+  function testReturn(thunk) {
+    var iter = thunk();
+    for (var i = 0; i < 8; i++) {
+      assertIteratorResult(send_val, true, iter.return(send_val));
+      assertIteratorIsClosed(iter);
+    }
+  }
 
   testNext(g);
   testSend(g);
   testThrow(g);
+  testReturn(g);
 
   testNext(function*() { return yield* g(); });
   testSend(function*() { return yield* g(); });
   testThrow(function*() { return yield* g(); });
+  testReturn(function*() { return yield* g(); });
 
   if (g instanceof GeneratorFunction) {
     testNext(function() { return new g(); });
     testSend(function() { return new g(); });
     testThrow(function() { return new g(); });
+    testReturn(function() { return new g(); });
   }
 }
 

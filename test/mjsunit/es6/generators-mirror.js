@@ -110,3 +110,12 @@ TestGeneratorMirror(iter2, 'suspended', 11, 2, obj);
 
 iter2.next();
 TestGeneratorMirror(iter2, 'closed', 0, 0, obj);
+
+var iter3 = generator(function() {
+  throw 'unreachable';
+});
+
+TestGeneratorMirror(iter3, 'suspended', 7, 19);
+
+iter3.return();
+TestGeneratorMirror(iter3, 'closed', 0, 0);

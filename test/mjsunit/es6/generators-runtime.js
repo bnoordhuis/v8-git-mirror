@@ -105,7 +105,7 @@ function TestGeneratorObjectPrototype() {
   assertSame(GeneratorObjectPrototype,
              Object.getPrototypeOf((function*(){yield 1}).prototype));
 
-  var expected_property_names = ["next", "throw", "constructor"];
+  var expected_property_names = ["next", "return", "throw", "constructor"];
   var found_property_names =
       Object.getOwnPropertyNames(GeneratorObjectPrototype);
 
@@ -120,6 +120,13 @@ function TestGeneratorObjectPrototype() {
   assertFalse(constructor_desc.writable);
   assertFalse(constructor_desc.enumerable);
   assertTrue(constructor_desc.configurable);
+
+  var return_desc = Object.getOwnPropertyDescriptor(GeneratorObjectPrototype,
+      "return");
+  assertTrue(return_desc !== undefined);
+  assertTrue(return_desc.writable);
+  assertFalse(return_desc.enumerable);
+  assertTrue(return_desc.configurable);
 
   var next_desc = Object.getOwnPropertyDescriptor(GeneratorObjectPrototype,
       "next");

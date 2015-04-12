@@ -33,10 +33,12 @@ function assertIteratorResult(value, done, result) {
 (function testIteratorResultStrict() {
   function* generator() { "use strict"; }
   assertIteratorResult(undefined, true, generator().next());
+  assertIteratorResult(undefined, true, generator().return());
 })();
 
 
 (function testIteratorResultSloppy() {
   function* generator() {}
   assertIteratorResult(undefined, true, generator().next());
+  assertIteratorResult(undefined, true, generator().return());
 })();
