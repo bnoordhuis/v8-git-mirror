@@ -2291,7 +2291,8 @@ void FullCodeGenerator::EmitGeneratorResume(Expression *generator,
 
   // If we are sending a value and there is no operand stack, we can jump back
   // in directly.
-  if (resume_mode == JSGeneratorObject::NEXT) {
+  if (resume_mode == JSGeneratorObject::NEXT ||
+      resume_mode == JSGeneratorObject::RETURN) {
     Label slow_resume;
     __ cmpp(rdx, Immediate(0));
     __ j(not_zero, &slow_resume);
@@ -2299,8 +2300,11 @@ void FullCodeGenerator::EmitGeneratorResume(Expression *generator,
     __ SmiToInteger64(rcx,
         FieldOperand(rbx, JSGeneratorObject::kContinuationOffset));
     __ addp(rdx, rcx);
+    const int continuation = (resume_mode == JSGeneratorObject::RETURN) ?
+        JSGeneratorObject::kGeneratorClosed :
+        JSGeneratorObject::kGeneratorExecuting;
     __ Move(FieldOperand(rbx, JSGeneratorObject::kContinuationOffset),
-            Smi::FromInt(JSGeneratorObject::kGeneratorExecuting));
+            Smi::FromInt(continuation));
     __ jmp(rdx);
     __ bind(&slow_resume);
   }
